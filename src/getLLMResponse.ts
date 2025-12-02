@@ -1,8 +1,8 @@
-import z, { ZodArray, ZodObject } from "zod";
+import z, { ZodArray, ZodObject, ZodRecord } from "zod";
 import { jsonrepair } from "jsonrepair";
 import { getOpenAISFWInstance } from "./openai";
 
-export const getLLMResponse = async <Schema extends ZodObject | ZodArray>({
+export const getLLMResponse = async <Schema extends ZodObject | ZodArray | ZodRecord>({
   userMessage,
   systemMessage,
   schema,
