@@ -2,7 +2,8 @@
   "name": "@linkbase/ai-tools",
   "version": "1.0.0",
   "description": "",
-  "main": "./src/index.ts",
+  "main": "./dist/src/index.js",
+  "types": "./dist/src/index.d.ts",
   "scripts": {
     "clean": "rimraf dist",
     "build": "pnpm clean && tsc",
