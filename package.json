@@ -1,9 +1,13 @@
 {
   "name": "@koko420/ai-tools",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Some ai-tools for all sorts of things",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
+  "files": [
+    "dist",
+    "package.json"
+  ],
   "scripts": {
     "clean": "rimraf dist",
     "build": "pnpm clean && tsc",
