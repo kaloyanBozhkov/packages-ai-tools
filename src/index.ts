@@ -1,3 +1,5 @@
+import './env';
+
 // Export all AI tools functionality
 export * from './constants';
 export * from './embeddings';
