@@ -1,14 +1,21 @@
 import { join, raw, sqltag } from "@prisma/client/runtime/library";
 import { ai_cached_embedding, PrismaLike } from "./type";
+import { DEFAULT_SQL_TAGS } from "./constants";
 
-export const getManyCachedEmbeddings = async ({
+export const getManyCachedEmbeddings = async <
+  EmbeddingFeatureType extends string
+>({
   texts,
   prisma,
-  aiCachedEmbeddingTableName = "ai_cached_embedding",
+  aiCachedEmbeddingTableName = DEFAULT_SQL_TAGS.tablename,
+  aiCachedEmbeddingFeatureTypeEnumName = DEFAULT_SQL_TAGS.featureTypeEnumName,
+  featureTypes,
 }: {
   texts: string[];
-  aiCachedEmbeddingTableName?: string;
+  featureTypes?: EmbeddingFeatureType[];
   prisma: PrismaLike;
+  aiCachedEmbeddingTableName?: string;
+  aiCachedEmbeddingFeatureTypeEnumName?: string;
 }) => {
   const embeddings = await prisma.$queryRaw<ai_cached_embedding[]>(
     sqltag`
@@ -16,6 +23,13 @@ export const getManyCachedEmbeddings = async ({
         aiCachedEmbeddingTableName
       )} 
       WHERE text IN (${join(texts)})
+      ${
+        featureTypes
+          ? ` AND feature_type = ARRAY[${featureTypes.join(
+              ", "
+            )}]::${aiCachedEmbeddingFeatureTypeEnumName}[]`
+          : ""
+      }
     `
   );
 
