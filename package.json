@@ -1,7 +1,7 @@
 {
-  "name": "@linkbase/ai-tools",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@koko420/ai-tools",
+  "version": "1.0.1",
+  "description": "Some ai-tools for all sorts of things",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
   "scripts": {
@@ -11,7 +11,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
-  "keywords": [],
+  "keywords": ["openai", "embeddings", "ai-tools", "llm"],
   "author": "Koko",
   "license": "ISC",
   "packageManager": "pnpm@10.13.1",
