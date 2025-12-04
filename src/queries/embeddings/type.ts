@@ -1,5 +1,3 @@
-import { sqltag } from "@prisma/client/runtime/library";
-
 // must have prisma table implementing these
 export type ai_cached_embedding = {
   id: string;
@@ -11,8 +9,5 @@ export type ai_cached_embedding = {
 };
 
 export type PrismaLike = {
-  $queryRaw<T>(
-    query: TemplateStringsArray | ReturnType<typeof sqltag>,
-    ...values: unknown[]
-  ): Promise<T>;
+  $queryRawUnsafe<T = unknown>(query: string, ...values: unknown[]): Promise<T>;
 };

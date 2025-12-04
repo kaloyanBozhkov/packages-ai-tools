@@ -1,11 +1,10 @@
 import { createId } from "@paralleldrive/cuid2";
-import { vectorize, enquote } from "../sql";
-import { raw, sqltag } from "@prisma/client/runtime/library";
+import { vectorize, enquote, formatSqlString, joinArrayItems } from "../sql";
 import { ai_cached_embedding, PrismaLike } from "./type";
 import { DEFAULT_SQL_TAGS } from "./constants";
 
 export const createCachedEmbedding = async <
-  EmbeddingFeatureType extends string
+  EmbeddingFeatureType extends string,
 >({
   prisma,
   text,
@@ -21,17 +20,16 @@ export const createCachedEmbedding = async <
   aiCachedEmbeddingTableName?: string;
   aiCachedEmbeddingFeatureTypeEnumName?: string;
 }) => {
-  const createdEmbedding = await prisma.$queryRaw<ai_cached_embedding[]>(sqltag`
-    INSERT INTO ${raw(
-      aiCachedEmbeddingTableName
-    )} (id, text, embedding, feature_type)
+  const sql = formatSqlString(`INSERT INTO ${
+    aiCachedEmbeddingTableName
+  } (id, text, embedding, feature_type)
     VALUES (${enquote(createId())}, ${enquote(text)}, ${vectorize(
-    embedding
-  )}, ARRAY[${featureTypes.join(
-    ", "
-  )}]::${aiCachedEmbeddingFeatureTypeEnumName}[])
-    RETURNING id, text, created_at, updated_at
-  `);
+      embedding
+    )}, ARRAY[${joinArrayItems(featureTypes)}]::${aiCachedEmbeddingFeatureTypeEnumName}[])
+    RETURNING id, text, created_at, updated_at`);
+
+  const createdEmbedding =
+    await prisma.$queryRawUnsafe<ai_cached_embedding[]>(sql);
 
   return {
     ...createdEmbedding[0],

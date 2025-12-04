@@ -1,6 +1,6 @@
 {
   "name": "@koko420/ai-tools",
-  "version": "1.0.7",
+  "version": "1.0.12",
   "description": "Some ai-tools for all sorts of things",
   "main": "./dist/src/index.js",
   "types": "./dist/src/index.d.ts",
@@ -15,7 +15,12 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
-  "keywords": ["openai", "embeddings", "ai-tools", "llm"],
+  "keywords": [
+    "openai",
+    "embeddings",
+    "ai-tools",
+    "llm"
+  ],
   "author": "Koko",
   "license": "ISC",
   "packageManager": "pnpm@10.13.1",
@@ -26,11 +31,13 @@
     "dotenv": "^17.2.3",
     "jsonrepair": "^3.13.0",
     "openai": "^6.2.0",
+    "pg-format": "^1.0.4",
     "zod": "^4.1.13"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@types/node": "^20.0.0",
+    "@types/pg-format": "^1.0.5",
     "eslint": "^9.39.1",
     "rimraf": "^6.0.1",
     "typescript": "^5.0.0",

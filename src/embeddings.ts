@@ -31,13 +31,23 @@ export type TextEmbedding = {
 export async function getEmbeddings<EmbeddingFeatureType extends string>({
   text,
   prisma,
-  featureType = "FACT" as EmbeddingFeatureType,
+  aiCachedEmbeddingFeatureTypeEnumName,
+  aiCachedEmbeddingTableName,
+  featureTypes = ["FACT" as EmbeddingFeatureType],
 }: {
   text: string;
-  featureType?: EmbeddingFeatureType;
+  featureTypes?: EmbeddingFeatureType[];
   prisma: PrismaLike;
+  aiCachedEmbeddingFeatureTypeEnumName?: string;
+  aiCachedEmbeddingTableName?: string;
 }): Promise<TextEmbedding> {
-  const existingEmbedding = await getCachedEmbedding({ text, prisma }); // TODO figure out if it matters what type the embedding is for use cases using existing embeddings
+  const existingEmbedding = await getCachedEmbedding({
+    text,
+    prisma,
+    featureTypes,
+    aiCachedEmbeddingFeatureTypeEnumName,
+    aiCachedEmbeddingTableName,
+  }); // TODO figure out if it matters what type the embedding is for use cases using existing embeddings
   if (existingEmbedding) {
     return formatEmbeddings([existingEmbedding], false)[0];
   }
@@ -47,22 +57,34 @@ export async function getEmbeddings<EmbeddingFeatureType extends string>({
   const cachedEmbedding = await createCachedEmbedding<EmbeddingFeatureType>({
     text,
     embedding,
-    featureTypes: [featureType],
+    featureTypes,
     prisma,
+    aiCachedEmbeddingFeatureTypeEnumName,
+    aiCachedEmbeddingTableName,
   });
   return formatEmbeddings([cachedEmbedding], true)[0];
 }
 
 export async function getManyEmbeddings<EmbeddingFeatureType extends string>({
   texts,
-  featureType,
+  featureTypes,
   prisma,
+  aiCachedEmbeddingFeatureTypeEnumName,
+  aiCachedEmbeddingTableName,
 }: {
   texts: string[];
-  featureType: EmbeddingFeatureType;
   prisma: PrismaLike;
+  aiCachedEmbeddingFeatureTypeEnumName?: string;
+  aiCachedEmbeddingTableName?: string;
+  featureTypes: EmbeddingFeatureType[];
 }) {
-  const existingEmbeddings = await getManyCachedEmbeddings({ texts, prisma });
+  const existingEmbeddings = await getManyCachedEmbeddings({
+    texts,
+    prisma,
+    aiCachedEmbeddingFeatureTypeEnumName,
+    aiCachedEmbeddingTableName,
+    featureTypes,
+  });
   const textsToEmbed = texts.filter((text) => {
     const existingEmbedding = existingEmbeddings.find(
       (embedding) => embedding.text === text
@@ -77,8 +99,10 @@ export async function getManyEmbeddings<EmbeddingFeatureType extends string>({
     const cachedEmbedding = await createCachedEmbedding<EmbeddingFeatureType>({
       text,
       embedding,
-      featureTypes: [featureType],
       prisma,
+      featureTypes,
+      aiCachedEmbeddingFeatureTypeEnumName,
+      aiCachedEmbeddingTableName,
     });
     newEmbeddings.push(cachedEmbedding);
   }
@@ -157,7 +181,7 @@ export const getSimilarityExpression = ({
   embedding: number[];
   embeddingColumn: string;
 }): string => {
-  const embeddingArray = vectorize(embedding, false);
+  const embeddingArray = vectorize(embedding);
 
   switch (type) {
     case VectorSimilarityType.COSINE:

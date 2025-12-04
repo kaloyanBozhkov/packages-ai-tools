@@ -1,12 +1,11 @@
-import { raw } from "@prisma/client/runtime/library";
+import pgFormat from "pg-format";
 
-export const enquote = (text: string) => raw(`'${text.replace(/'/g, "''")}'`);
-
-export const vectorize = (embedding: number[], wrapInPrismaRaw = true) => {
-  const str = `'${JSON.stringify(embedding)}'::vector`;
-  return wrapInPrismaRaw ? raw(str) : str;
-};
-
+export const enquote = (text: string) => `'${text.replace(/'/g, "''")}'`;
+export const vectorize = (embedding: number[]) =>
+  `'${JSON.stringify(embedding)}'::vector`;
+export const joinArrayItems = (items: string[]) =>
+  items.map((item) => `'${item}'`).join(", ");
+export const formatSqlString = (sql: string) => pgFormat(sql.replaceAll('\n', ''));
 /**
  * Query composition utilities for building complex SQL queries
  */

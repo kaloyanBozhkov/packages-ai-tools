@@ -1,9 +1,9 @@
-import { join, raw, sqltag } from "@prisma/client/runtime/library";
 import { ai_cached_embedding, PrismaLike } from "./type";
 import { DEFAULT_SQL_TAGS } from "./constants";
+import { formatSqlString, joinArrayItems } from "../sql";
 
 export const getManyCachedEmbeddings = async <
-  EmbeddingFeatureType extends string
+  EmbeddingFeatureType extends string,
 >({
   texts,
   prisma,
@@ -17,21 +17,16 @@ export const getManyCachedEmbeddings = async <
   aiCachedEmbeddingTableName?: string;
   aiCachedEmbeddingFeatureTypeEnumName?: string;
 }) => {
-  const embeddings = await prisma.$queryRaw<ai_cached_embedding[]>(
-    sqltag`
-      SELECT id, text, created_at, updated_at, feature_type, embedding::text FROM ${raw(
-        aiCachedEmbeddingTableName
-      )} 
-      WHERE text IN (${join(texts)})
-      ${
-        featureTypes
-          ? ` AND feature_type = ARRAY[${featureTypes.join(
-              ", "
-            )}]::${aiCachedEmbeddingFeatureTypeEnumName}[]`
-          : ""
-      }
-    `
-  );
+  const sql =
+    formatSqlString(`SELECT id, text, created_at, updated_at, feature_type, embedding::text FROM ${aiCachedEmbeddingTableName} 
+  WHERE text IN (${joinArrayItems(texts)})
+  ${
+    featureTypes && featureTypes.length > 0
+      ? ` AND feature_type && ARRAY[${joinArrayItems(featureTypes)}]::${aiCachedEmbeddingFeatureTypeEnumName}[]`
+      : ""
+  }`);
+
+  const embeddings = await prisma.$queryRawUnsafe<ai_cached_embedding[]>(sql);
 
   return embeddings.map((embedding) => ({
     ...embedding,
