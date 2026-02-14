@@ -26,6 +26,9 @@ export const createCachedEmbedding = async <
     VALUES (${enquote(createId())}, ${enquote(text)}, ${vectorize(
       embedding
     )}, ARRAY[${joinArrayItems(featureTypes)}]::${aiCachedEmbeddingFeatureTypeEnumName}[])
+    ON CONFLICT (text) DO UPDATE SET
+      feature_type = (SELECT ARRAY(SELECT DISTINCT unnest(${aiCachedEmbeddingTableName}.feature_type || EXCLUDED.feature_type))),
+      updated_at = NOW()
     RETURNING id, text, created_at, updated_at`);
 
   const createdEmbedding =
