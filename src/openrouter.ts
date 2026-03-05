@@ -1,13 +1,12 @@
-import OpenAI from "openai";
+import { OpenRouter } from "@openrouter/sdk";
 import { env } from "./env";
 
-let openRouterInstance: OpenAI | null = null;
+let openRouterInstance: OpenRouter | null = null;
 
-export const getOpenRouterInstance = (): OpenAI => {
+export const getOpenRouterInstance = (): OpenRouter => {
   if (openRouterInstance === null) {
-    openRouterInstance = new OpenAI({
+    openRouterInstance = new OpenRouter({
       apiKey: env.OPENROUTER_API_KEY,
-      baseURL: "https://openrouter.ai/api/v1",
     });
   }
 

@@ -11,6 +11,9 @@ importers:
       '@koko420/shared':
         specifier: 1.0.2
         version: 1.0.2
+      '@openrouter/sdk':
+        specifier: ^0.9.11
+        version: 0.9.11
       '@paralleldrive/cuid2':
         specifier: ^2.2.2
         version: 2.3.1
@@ -125,6 +128,9 @@ packages:
   '@noble/hashes@1.8.0':
     resolution: {integrity: sha512-jCs9ldd7NwzpgXDIf6P3+NrHh9/sD6CQdxHyjQI+h/6rDNo88ypBxxz45UDuZHz9r3tNz7N/VInSVoVdtXEI4A==}
     engines: {node: ^14.21.3 || >=16}
+
+  '@openrouter/sdk@0.9.11':
+    resolution: {integrity: sha512-BgFu6NcIJO4a9aVjr04y3kZ8pyM71j15I+bzfVAGEvxnj+KQNIkBYQGgwrG3D+aT1QpDKLki8btcQmpaxUas6A==}
 
   '@paralleldrive/cuid2@2.3.1':
     resolution: {integrity: sha512-XO7cAxhnTZl0Yggq6jOgjiOHhbgcO4NqFqwSmQpjK3b6TEE6Uj/jfSk6wzYyemh3+I0sHirKSetjQwn5cZktFw==}
@@ -675,6 +681,10 @@ snapshots:
       luxon: 3.7.2
 
   '@noble/hashes@1.8.0': {}
+
+  '@openrouter/sdk@0.9.11':
+    dependencies:
+      zod: 4.1.13
 
   '@paralleldrive/cuid2@2.3.1':
     dependencies:

@@ -1,9 +1,10 @@
 import z, { ZodArray, ZodObject, ZodRecord } from "zod";
 import { jsonrepair } from "jsonrepair";
-import type OpenAI from "openai";
+import type { OpenRouter } from "@openrouter/sdk";
 import { getOpenRouterInstance } from "./openrouter";
 
-type OpenRouterModel = OpenAI.ChatCompletionCreateParams["model"];
+type ChatSendParams = Parameters<OpenRouter["chat"]["send"]>[0];
+type OpenRouterModel = ChatSendParams["chatGenerationParams"]["model"];
 
 let cachedModels: string[] | null = null;
 
@@ -29,28 +30,32 @@ export const getOpenRouterLLMResponse = async <
   schema: Schema;
   model: OpenRouterModel;
 }): Promise<z.infer<Schema>> => {
-  const availableModels = await getOpenRouterModels();
-  if (!availableModels.includes(model)) {
-    throw new Error(
-      `Model "${model}" is not available on OpenRouter. Use getOpenRouterModels() to see available models.`
-    );
+  if (model) {
+    const availableModels = await getOpenRouterModels();
+    if (!availableModels.includes(model)) {
+      throw new Error(
+        `Model "${model}" is not available on OpenRouter. Use getOpenRouterModels() to see available models.`
+      );
+    }
   }
 
   const openRouter = getOpenRouterInstance();
-  const response = await openRouter.chat.completions.create({
-    model,
-    messages: [
-      { role: "system", content: systemMessage },
-      ...(Array.isArray(userMessage)
-        ? userMessage.map((message) => ({
-            role: "user" as const,
-            content: message,
-          }))
-        : [{ role: "user" as const, content: userMessage }]),
-    ],
+  const response = await openRouter.chat.send({
+    chatGenerationParams: {
+      model,
+      messages: [
+        { role: "system", content: systemMessage },
+        ...(Array.isArray(userMessage)
+          ? userMessage.map((message) => ({
+              role: "user" as const,
+              content: message,
+            }))
+          : [{ role: "user" as const, content: userMessage }]),
+      ],
+    },
   });
-  const responseText = response.choices[0].message.content;
-  if (!responseText) {
+  const responseText = response.choices?.[0]?.message?.content;
+  if (!responseText || typeof responseText !== "string") {
     throw new Error("No response from LLM");
   }
   console.log("response before parsing", responseText);

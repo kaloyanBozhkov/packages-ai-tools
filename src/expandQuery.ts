@@ -3,16 +3,19 @@ import { getOpenRouterInstance } from "./openrouter";
 import { retry, logError } from "@koko420/shared";
 
 const getExpandedQuery = async (text: string, systemMessage: string) => {
-  const response = await getOpenRouterInstance().chat.completions.create({
-    model: OpenRouterTextGenerationModel.GEMMA_3_27B_IT,
-    temperature: 0,
-    messages: [
-      { role: "system", content: systemMessage },
-      { role: "user", content: text },
-    ],
+  const response = await getOpenRouterInstance().chat.send({
+    chatGenerationParams: {
+      model: OpenRouterTextGenerationModel.GEMMA_3_27B_IT,
+      temperature: 0,
+      messages: [
+        { role: "system", content: systemMessage },
+        { role: "user", content: text },
+      ],
+    },
   });
 
-  const expandedText = response.choices[0]?.message?.content?.trim();
+  const content = response.choices?.[0]?.message?.content;
+  const expandedText = typeof content === "string" ? content.trim() : undefined;
 
   if (!expandedText) {
     logError(
