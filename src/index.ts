@@ -6,6 +6,7 @@ export * from './embeddings';
 export * from './expandQuery';
 export * from './getAudioTranscription';
 export * from './getLLMResponse';
+export * from './getOpenRouterLLMResponse';
 export * from './openai';
 export * from './openrouter';
 export * from './queries';
