@@ -12,7 +12,7 @@ pnpm add @koko420/ai-tools
 
 | Variable | Required | Description |
 |---|---|---|
-| `OPEN_AI_API_KEY` | Optional (warns if missing) | OpenAI API key |
+| `OPENAI_API_KEY` | Optional (warns if missing) | OpenAI API key |
 | `OPENROUTER_API_KEY` | Optional (warns if missing) | OpenRouter API key |
 
 ## Exported Modules

@@ -4,10 +4,10 @@ import { z } from "zod";
 import dotenv from "dotenv";
 dotenv.config();
 
-const OPTIONAL_KEYS = ["OPEN_AI_API_KEY", "OPENROUTER_API_KEY"] as const;
+const OPTIONAL_KEYS = ["OPENAI_API_KEY", "OPENROUTER_API_KEY"] as const;
 
 const envSchema = z.object({
-  OPEN_AI_API_KEY: z.string().min(1).optional(),
+  OPENAI_API_KEY: z.string().min(1).optional(),
   OPENROUTER_API_KEY: z.string().min(1).optional(),
 });
 
