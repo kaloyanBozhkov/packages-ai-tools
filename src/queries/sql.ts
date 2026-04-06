@@ -4,7 +4,7 @@ export const enquote = (text: string) => `'${text.replace(/'/g, "''")}'`;
 export const vectorize = (embedding: number[]) =>
   `'${JSON.stringify(embedding)}'::vector`;
 export const joinArrayItems = (items: string[]) =>
-  items.map((item) => `'${item}'`).join(", ");
+  items.map((item) => `'${String(item).replace(/'/g, "''")}'`).join(", ");
 export const formatSqlString = (sql: string) => pgFormat(sql.replaceAll('\n', ''));
 /**
  * Query composition utilities for building complex SQL queries
