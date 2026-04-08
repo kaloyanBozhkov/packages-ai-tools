@@ -4,6 +4,7 @@ import { getLLMResponse } from '../getLLMResponse';
 import fs from 'fs';
 import path from 'path';
 import z from 'zod';
+import { findOrphanedKeysForLocalesDir } from './findOrphanedKeys';
 
 // Configuration — overridable via env vars
 // TRANSLATE_SOURCE_LANGUAGE: source language code (default: "en")
@@ -248,7 +249,7 @@ const createTranslationPrompt = (sourceContent: Record<string, any>, targetLangu
   const languageInfo = getLanguageInfo(targetLanguage);
   const contentType = isPartial ? 'missing translation keys' : 'JSON translation file';
 
-  return `You are a professional translator specializing in mobile app localization.
+  return `You are a professional translator specializing in website and mobile app transaltions.
 
 Please translate the following ${contentType} from English to ${languageInfo.name} (${languageInfo.nativeName}).
 
@@ -385,6 +386,20 @@ const determineTargetLanguages = (existingTranslations: string[], includeAll: bo
 // Process a single locales directory
 const processLocalesDirectory = async (localesDir: string): Promise<void> => {
   console.log(`\n📁 Processing locales directory: ${path.relative(process.cwd(), localesDir)}`);
+
+  // Check for orphaned keys (used in code but missing from source file)
+  const projectRoot = process.cwd();
+  const orphanedKeys = findOrphanedKeysForLocalesDir(localesDir, projectRoot);
+  if (orphanedKeys.length > 0) {
+    console.log(`\n⚠️  Found ${orphanedKeys.length} orphaned key(s) — used in code but missing from ${SOURCE_LANGUAGE}.json:`);
+    for (const { key, files } of orphanedKeys) {
+      console.log(`    • "${key}"`);
+      for (const f of [...new Set(files)]) {
+        console.log(`      └─ ${f}`);
+      }
+    }
+    console.log('');
+  }
 
   // Get existing translations
   const existingTranslations = getExistingTranslations(localesDir);
