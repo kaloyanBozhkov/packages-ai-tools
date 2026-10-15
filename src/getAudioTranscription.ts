@@ -1,6 +1,9 @@
 import { getOpenAISFWInstance } from "./openai";
 
-export const getAudioTranscription = async (audioFileUrl: string) => {
+export const getAudioTranscription = async (
+  audioFileUrl: string,
+  model: string = "gpt-4o-transcribe",
+) => {
   console.log("audioFileUrl", audioFileUrl);
   const openai = getOpenAISFWInstance();
   const file = await fetch(audioFileUrl);
@@ -11,7 +14,7 @@ export const getAudioTranscription = async (audioFileUrl: string) => {
   });
   const transcription = await openai.audio.transcriptions.create({
     file: namedBlob,
-    model: "gpt-4o-transcribe",
+    model,
     response_format: "text",
   });
   return transcription;
