@@ -1,6 +1,6 @@
 import { ai_cached_embedding, PrismaLike } from "./type";
 import { DEFAULT_SQL_TAGS } from "./constants";
-import { formatSqlString, joinArrayItems } from "../sql";
+import { joinArrayItems } from "../sql";
 
 export const getManyCachedEmbeddings = async <
   EmbeddingFeatureType extends string,
@@ -18,13 +18,13 @@ export const getManyCachedEmbeddings = async <
   aiCachedEmbeddingFeatureTypeEnumName?: string;
 }) => {
   const sql =
-    formatSqlString(`SELECT id, text, created_at, updated_at, feature_type, embedding::text FROM ${aiCachedEmbeddingTableName} 
+    `SELECT id, text, created_at, updated_at, feature_type, embedding::text FROM ${aiCachedEmbeddingTableName} 
   WHERE text IN (${joinArrayItems(texts)})
   ${
     featureTypes && featureTypes.length > 0
       ? ` AND feature_type && ARRAY[${joinArrayItems(featureTypes)}]::${aiCachedEmbeddingFeatureTypeEnumName}[]`
       : ""
-  }`);
+  }`;
 
   const embeddings = await prisma.$queryRawUnsafe<ai_cached_embedding[]>(sql);
 

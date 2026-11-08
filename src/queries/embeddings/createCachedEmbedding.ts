@@ -1,5 +1,5 @@
 import { createId } from "@paralleldrive/cuid2";
-import { vectorize, enquote, formatSqlString, joinArrayItems } from "../sql";
+import { vectorize, enquote, joinArrayItems } from "../sql";
 import { ai_cached_embedding, PrismaLike } from "./type";
 import { DEFAULT_SQL_TAGS } from "./constants";
 
@@ -20,7 +20,7 @@ export const createCachedEmbedding = async <
   aiCachedEmbeddingTableName?: string;
   aiCachedEmbeddingFeatureTypeEnumName?: string;
 }) => {
-  const sql = formatSqlString(`INSERT INTO ${
+  const sql = `INSERT INTO ${
     aiCachedEmbeddingTableName
   } (id, text, embedding, feature_type)
     VALUES (${enquote(createId())}, ${enquote(text)}, ${vectorize(
@@ -29,7 +29,7 @@ export const createCachedEmbedding = async <
     ON CONFLICT (text) DO UPDATE SET
       feature_type = (SELECT ARRAY(SELECT DISTINCT unnest(${aiCachedEmbeddingTableName}.feature_type || EXCLUDED.feature_type))),
       updated_at = NOW()
-    RETURNING id, text, created_at, updated_at`);
+    RETURNING id, text, created_at, updated_at`;
 
   const createdEmbedding =
     await prisma.$queryRawUnsafe<ai_cached_embedding[]>(sql);
